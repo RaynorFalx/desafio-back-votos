@@ -1,53 +1,60 @@
 # Desafio Técnico
-## Objetivo
-No cooperativismo, cada associado possui um voto e as decisões são tomadas em assembleias, por votação. A partir disso, você precisa criar uma solução back-end para gerenciar essas sessões de votação. Essa solução deve ser executada na nuvem e promover as seguintes funcionalidades através de uma API REST:
-- Cadastrar uma nova pauta;
-- Abrir uma sessão de votação em uma pauta (a sessão de votação deve ficar aberta por um tempo determinado na chamada de abertura ou 1 minuto por default);
-- Receber votos dos associados em pautas (os votos são apenas 'Sim'/'Não'. Cada associado é identificado por um id único e pode votar apenas uma vez por pauta);
-- Contabilizar os votos e dar o resultado da votação na pauta.
+## Sobre
 
-Para fins de exercício, a segurança das interfaces pode ser abstraída e qualquer chamada para as interfaces pode ser considerada como autorizada. A escolha da linguagem, frameworks e bibliotecas é livre (desde que não infrinja direitos de uso).
+API feita a partir do framework Springboot, devido a sua pré configuração de componentes para aplicações WEB, ORM, Rest
+e HTTP, também por eu possuir um conhecimento prévio em implementações de API's construídas em Springboot.
 
-É importante que as pautas e os votos sejam persistidos e que não sejam perdidos com o restart da aplicação.
+Para o banco de dados foi escolhido o Postgress pelo fato de ser um banco de dados gratuito e de rápida implementação
+assim como seu suporte pela comunidade e por eu possuir um conhecimento prévio em API's que possuiam postgres como 
+fonte de dados.
 
-### Tarefas bônus
-As tarefas bônus não são obrigatórias, mas nos permitem avaliar outros conhecimentos que você possa ter.
+A fim de criar uma aplicação que execute na nuvem e em diversos ambientes foi criado uma estrutura Docker para executar
+a aplicação, o banco de dados e o console gerenciador do banco de dados PgAdmin 4.
 
-A gente sempre sugere que o candidato pondere e apresente até onde consegue fazer, considerando o seu
-nível de conhecimento e a qualidade da entrega.
+A documentação foi feita a partir do framework Swagger e está disponível em: http://localhost/swagger-ui.htm. Estão 
+disponíveis as chamadas do POSTMAN na pasta run.
+
+## Execução
+
+Executando o primeiro comando: "mvn clean install" para que dependências sejam baixadas. Após as libs estarem de acordo
+acesse a pasta run na raiz do projeto e execute a estrutura docker com o comando "docker-compose up". Para isso
+é necessário que o Docker machine esteja instalado em sua máquina. A aplicação ficará disponível no http://localhost:8080 e o 
+console do PgAdmin 4 no endereço http://localhost:5050/
+
+
 #### Tarefa Bônus 1 - Integração com sistemas externos
-Integrar com um sistema que verifique, a partir do CPF do associado, se ele pode votar
-- GET https://user-info.herokuapp.com/users/{cpf}
-- Caso o CPF seja inválido, a API retornará o HTTP Status 404 (Not found). Você pode usar geradores de CPF para gerar CPFs válidos;
-- Caso o CPF seja válido, a API retornará se o usuário pode (ABLE_TO_VOTE) ou não pode (UNABLE_TO_VOTE) executar a operação
-Exemplos de retorno do serviço
+Implementado.
+
+Descrição: Implementado usando RestTemplate do Java.
 
 #### Tarefa Bônus 2 - Mensageria e filas
-Classificação da informação: Uso Interno
-O resultado da votação precisa ser informado para o restante da plataforma, isso deve ser feito preferencialmente através de mensageria. Quando a sessão de votação fechar, poste uma mensagem com o resultado da votação.
+Não implementada.
 
 #### Tarefa Bônus 3 - Performance
-Imagine que sua aplicação possa ser usada em cenários que existam centenas de milhares de votos. Ela deve se comportar de maneira performática nesses cenários;
-- Testes de performance são uma boa maneira de garantir e observar como sua aplicação se comporta.
+Implementado.
+
+Descrição: Na raiz do projeto existe a pasta jmeter, nela consta dois relatórios de Teste de Perfomace executado nos métodos de
+cadastrar um novo Associado e no método de Realizar Voto.
+
+CadastrarNovoAssociado: Executado sem problemas, consta 99% de sucesso, devido a primeira linha da massa de dados que 
+estava incorreta.
+
+RealizarVoto: Possuiu 53.33% de sucesso, devido ao fato do método verificar o CPF do candidato antes de executar o voto,
+portanto a taxa de erros gerada é ocasionada pelos resultados de UNABLE_TO_VOTE do componente de verificação do CPF.
+
+Também foram implementados testes unítarios para alguns dos serviços assim como teste de integração utilizando o banco 
+em memória H2. 
 
 #### Tarefa Bônus 4 - Versionamento da API
-Como você versionaria a API da sua aplicação? Que estratégia usar?
 
-### O que será analisado
-- Simplicidade no design da solução (evitar over engineering)
-- Organização do código
-- Arquitetura do projeto
-- Boas práticas de programação (manutenibilidade, legibilidade etc)
-- Possíveis bugs
-- Tratamento de erros e exceções
-- Explicação breve do porquê das escolhas tomadas durante o desenvolvimento da solução
-- Uso de testes automatizados e ferramentas de qualidade
-- Limpeza do código
-- Documentação do código e da API
-- Logs da aplicação
-- Mensagens e organização dos commits
+Usando versionamento semântico. Devido a essa API possuir uma grande escabilidade, podendo possuir mudanças estruturais
+grandes, adição de novas funcionalidades e correção de bugs o versionamento semântico parece apropriado em lidar com cada
+situação de release. Dado o número de versão MAJOR.MINOR.PATCH, que representam:
 
-### Observações importantes
-- Não inicie o teste sem sanar todas as dúvidas
-- Iremos executar a aplicação para testá-la, cuide com qualquer dependência externa e deixe claro caso haja instruções especiais para execução do mesmo
-- Teste bem sua solução, evite bugs
+Versão MAJOR quando você faz alterações de API incompatíveis.
+Versão MINOR quando você adiciona funcionalidade de maneira compatível com versões anteriores.
+Versão PATCH quando você faz correções de bugs compatíveis com versões anteriores..
+
+Portanto essa API se inícia na versão 1.0.0 já que é uma versão estável.
+Caso fosse adicionada alguma funcionalidade ela iria para 1.1.0
+Ou uma correção de bugs: 1.0.1.
